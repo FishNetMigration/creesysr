@@ -10,7 +10,8 @@ hello_creesys()
 str "hello creesys"
 }
 \description{
-hello creesys
+This function only returns 'hello creesys' but
+is here as a simple example of how to write functions.
 }
 \examples{
 hello_creesys()
