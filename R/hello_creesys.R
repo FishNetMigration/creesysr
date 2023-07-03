@@ -7,5 +7,5 @@
 #' hello_creesys()
 
 hello_creesys <- function(){
-  "hello creesys"
+  "I only say hello creesys"
 }
