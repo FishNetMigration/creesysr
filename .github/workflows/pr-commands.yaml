@@ -3,9 +3,7 @@
 on:
   push:
     paths: ["R/**"]
-  pull_request:
-    paths: ["R/**"]
-
+  
 name: Commands
 
 jobs:
@@ -17,10 +15,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-
-      - uses: r-lib/actions/pr-fetch@v2
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup R
         uses: r-lib/actions/setup-r@v2
