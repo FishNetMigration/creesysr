@@ -1,11 +1,11 @@
 #' hello creesys
 #'
-#' @return str "hello creesys"
+#' @return str "I only say hello creesys, but that's cool."
 #' @export
 #'
 #' @examples
 #' hello_creesys()
 
 hello_creesys <- function(){
-  "hello creesys"
+  "I only say hello creesys, but that's cool."
 }
