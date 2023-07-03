@@ -1,7 +1,7 @@
 # Contributing
-1. [Understanding the basic function structure](/CONTRIBUTING#Intro)
-2. [Using Issues and new branches](/CONTRIBUTING#Issues)
-3. [Versioning Process](/CONTRIBUTING#Versioning)
+1. [Understanding the basic function structure](/CONTRIBUTING.md#intro)
+2. [Using Issues and new branches](/CONTRIBUTING.md#issues)
+3. [Versioning Process](/CONTRIBUTING.md#versioning)
 
 # Intro
 ## Package Strucure
