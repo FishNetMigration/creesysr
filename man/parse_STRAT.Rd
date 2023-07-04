@@ -17,3 +17,7 @@ STRAT is an important grouping variable used throughout FN2. Often though
 it is necessary to have the individual components parsed out in to data columns
 in order to be able to join tables together.
 }
+\examples{
+dummydf <- data.frame(STRAT = c("01_13_01_02", "01_11_02_01", "03_22_04_01"))
+parse_STRAT(dummydf)
+}
