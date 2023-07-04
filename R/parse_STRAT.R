@@ -7,7 +7,7 @@
 #'
 #' @param fndf a FN2 data table that includes STRAT as a column
 #'
-#' @return return the same FN2 dataframe with SSN, DTP, PRD, SPACE, and MODE columns
+#' @return return the same FN2 dataframe with SSN, DTP, PRD, SPACE, and MODE columns as factors
 #' @export
 #'
 #' @examples
@@ -17,21 +17,20 @@ parse_STRAT <- function(fndf) {
   if(!(STRAT %in% names(fndf))) {stop("STRAT is not a column in this dataframe")}
 
   # Season
-  fndf$SSN <- substr(fndf$STRAT, 1, 2)
+  fndf$SSN <- as.factor(substr(fndf$STRAT, 1, 2))
 
   # Day type
-  fndf$DTP <- substr(fndf$STRAT, 4, 4)
+  fndf$DTP <- as.factor(substr(fndf$STRAT, 4, 4))
 
   # Period
-  fndf$PRD <- substr(fndf$STRAT, 5,5)
+  fndf$PRD <- as.factor(substr(fndf$STRAT, 5,5))
 
   # Space
-  fndf$SPACE <- substr(fndf$STRAT, 7, 8)
+  fndf$SPACE <- as.factor(substr(fndf$STRAT, 7, 8))
 
   # Mode
-  fndf$MODE <- substr(fndf$STRAT, 10, 11)
+  fndf$MODE <- as.factor(substr(fndf$STRAT, 10, 11))
 
   # Return new appended df
   fndf
-
 }
