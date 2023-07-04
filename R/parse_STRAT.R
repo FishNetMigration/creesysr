@@ -14,7 +14,7 @@
 #'
 parse_STRAT <- function(fndf) {
   # fndf can be any FN2 table as long as it has STRAT
-  if(!(STRAT %in% names(fndf))) {stop("STRAT is not a column in this dataframe")}
+  if(!("STRAT" %in% names(fndf))) {stop("STRAT is not a column in this dataframe")}
 
   # Season
   fndf$SSN <- as.factor(substr(fndf$STRAT, 1, 2))
