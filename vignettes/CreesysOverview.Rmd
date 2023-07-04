@@ -55,7 +55,7 @@ FN011, FN022, FN023, FN024, FN025, FN026 *(FN028, and FN029)* are all project se
 The data table upon which calculations are base are: FN111, FN121, FN123 *(and FN125?)*. Additional data from the creel may be available in FN126 (diet) and FN127 (ages).
 
 ## Computed Data  
-1. FR712 - strata length and summary  
+1. FR712 - strata length and summary (equiv to "STRATDAYS" in Creesys 4.x)  
 2. FR713 - daily summary 
 3. FR
 
