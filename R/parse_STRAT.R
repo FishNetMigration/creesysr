@@ -11,7 +11,9 @@
 #' @export
 #'
 #' @examples
-#'
+#' dummydf <- data.frame(STRAT = c("01_13_01_02", "01_11_02_01", "03_22_04_01"))
+#' parse_STRAT(dummydf)
+
 parse_STRAT <- function(fndf) {
   # fndf can be any FN2 table as long as it has STRAT
   if(!("STRAT" %in% names(fndf))) {stop("STRAT is not a column in this dataframe")}
