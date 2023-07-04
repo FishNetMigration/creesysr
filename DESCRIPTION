@@ -14,3 +14,8 @@ Authors@R: c(
     person("Sarah", "Beech", , "sarah.beech1@ontario.ca", role = "aut"),
     person("Arthur", "Bonsall", , "arthur.bonsall@ontario.ca", role = "aut")
   )
+RoxygenNote: 7.2.3
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
