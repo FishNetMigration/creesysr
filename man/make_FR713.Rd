@@ -4,18 +4,24 @@
 \alias{make_FR713}
 \title{make_FR713}
 \usage{
-make_FR713(fn011, fn111, fn112, fn121, fn024)
+make_FR713(fn011, fn022, fn023, fn024, fn025, fn111, fn112, fn121)
 }
 \arguments{
 \item{fn011}{FN project definition table FN011 which lists project dates, year, lake name and project leader information}
 
-\item{fn111}{FN portion of the CLF that oulines the SAMA, Date, DOW, STRATUM,}
+\item{fn022}{FN strata definition file for SSN}
 
-\item{fn112}{FN portion of the CLF that outlines the activity count, time of the count and number of interviews that occured. Note: multiple counts could occur per SAMA}
-
-\item{fn121}{FN CIF creel interview form}
+\item{fn023}{FN strata definition file for DTP i.e. workday and weekend}
 
 \item{fn024}{FN stratum definition for period i.e. am or pm}
+
+\item{fn025}{FN stratum definition listing the exception days i.e. holidays that need to be re-coded as weekends}
+
+\item{fn111}{FN portion of the CLF that outlines the SAMA, Date, DOW, STRATUM,}
+
+\item{fn112}{FN portion of the CLF that outlines the activity count, time of the count and number of interviews that occurred. Note: multiple counts could occur per SAMA}
+
+\item{fn121}{FN CIF creel interview form}
 }
 \description{
 This is the creel estimate table for EFFORT
