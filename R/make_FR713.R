@@ -8,6 +8,8 @@
 #' @param fn023 FN strata definition file for DTP i.e. workday and weekend
 #' @param fn024 FN stratum definition for period i.e. am or pm
 #' @param fn025 FN stratum definition listing the exception days i.e. holidays that need to be re-coded as weekends
+#' @param fn026 FN stratum definition for the SPACE
+#' @param fn028 FN stratum definition for the MODE
 #'
 #' @description
 #' This is the creel estimate table for EFFORT
@@ -17,9 +19,12 @@
 #' @export
 #'
 #' @examples
-make_FR713<-function(fn011, fn022, fn023, fn024, fn025, fn111, fn112, fn121){
+make_FR713<-function(fn011, fn022, fn023, fn024, fn025, fn026, fn028, fn111, fn112, fn121){
 
   # create daily estimate FR713_daily
+
+  # cSPACE<-fn026 %>% group_by(PRJ_CD) %>% dplyr::summarize(cSPACE=n())
+  # cMODE<-fn028 %>% group_by(PRJ_CD) %>% dplyr::summarize(cMODE=n())
 
 
   CreelData111_112<-left_join(fn111, fn112, by=c("SAMA", "PRJ_CD"))
@@ -245,8 +250,6 @@ make_FR713<-function(fn011, fn022, fn023, fn024, fn025, fn111, fn112, fn121){
     FN023<-fn023 %>% filter(PRJ_CD==i)
     FN025<-fn025 %>% filter(PRJ_CD==i)
 
-    print(unique(FN022$PRJ_CD))
-
     get_EXCEPTDAYS_STRATDAYS(FN022, FN023, FN025)
 
     STRATDAYS_1<-rbind(STRATDAYS, STRATDAYS_1)
@@ -256,7 +259,7 @@ make_FR713<-function(fn011, fn022, fn023, fn024, fn025, fn111, fn112, fn121){
 
 
   # STRATUM FR713 ----------------------------------------------------------------
-  STRATDAYS_1<-STRATDAYS_1 %>% mutate(SSN=as.numeric(SSN), DTP=as.numeric(DTP))
+  STRATDAYS_1<-STRATDAYS_1 %>% mutate(SSN=as.numeric(SSN), DTP=as.numeric(DTP)) # eventually change back to factors
 
   # the means of the daily estimates within each stratum are multiplied by the stratum size (# days)
   R_FR713_Stratum<-R_FR713_Daily %>%
