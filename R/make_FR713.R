@@ -19,6 +19,7 @@
 #' @export
 #'
 #' @examples
+#'
 make_FR713<-function(fn011, fn022, fn023, fn024, fn025, fn026, fn028, fn111, fn112, fn121){
 
   # create daily estimate FR713_daily
@@ -315,7 +316,7 @@ make_FR713<-function(fn011, fn022, fn023, fn024, fn025, fn026, fn028, fn111, fn1
 
     group_by(PRJ_CD, AREA) %>%
     dplyr::summarize( SAM_DAYS=sum(SAM_DAYS_h, na.rm=TRUE),
-                      STRAT_HRS=sum(as.numeric(STRAT_HRS_h))/cSPACE/cMODE,
+                      STRAT_HRS=sum(as.numeric(STRAT_HRS_h))/first(cSPACE)/first(cMODE),
                       #STRAT_HRS: Sum([STRAT_HRS_h])/IIf([Forms]![R Creel Estimates]![cbo_SPACE] Is Null,First([cSPACE]),1)/IIf([Forms]![R Creel Estimates]![cbo_MODE] Is Null,First([cMODE]),1)
                       ATY_NN=sum(ATY_NN_h, na.rm=TRUE),
                       ATYCNT=sum(ATYCNT_h, na.rm=TRUE),
