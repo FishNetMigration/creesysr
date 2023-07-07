@@ -762,10 +762,4 @@ image_stack <- image_append(image, stack = T)
 image_write(image_stack, fileloc, format = "png")
 
 
-
-# cat(c("\\begin{table}[h] \\centering ",
-#       FR713_table,
-#       "\\hspace{1cm} \\centering \\newline ",
-#       FR714_table,
-#       "\\caption{Effort and Harvest Estimates} \\end{table}"))
 }
