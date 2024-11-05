@@ -751,7 +751,7 @@ save_kable(FR714_table, file = "FR714_table.png")
 
 image01 <- image_read("FR713_table.png")
 space <-image_read("space.png")
-space<-image_scale(space, "x50") # height: 100px
+space<-image_scale(space, "x50") # height: 50px
 image02 <- image_read("FR714_table.png")
 
 image <- c(image01,space, image02)
