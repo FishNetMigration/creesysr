@@ -1,7 +1,6 @@
 ---
 title: "Creesys FR713 and FR714 Report"
 author: "Your Name"
-output: output_format
 ---
 
 ```{r setup, include=FALSE}
