@@ -40,6 +40,49 @@ names(SC00)
 SC00$FN011
 ```
 
+# Preamble
+This vignette relies heavily on jargon from the original FishNet-II data model. Table and field definitions are availble through [GLIS](http://10.167.37.157/data_tools/databases/fntables/).
+
+# Scope
+## In scope
+The initial goal for `creesysr` is to generate the summary tables and outputs similar to those produced by *CREESYS* but limited in scope at present to *two-stage* roving creels. Additional modules and functionality will be considered upon successful completion of this initial goal. 
+
+### Principles 
+1. Maintain the original *CREESYS* table and variable naming conventions  
+2. Be somewhat platform independent. So long as Principle 1 is upheld the R package should be able to analyze data regardless of the format the data has been stored (FN2 DATA.ZIP, Excel, Access, GLIS API). 
+
+## Out of scope
+1. Data import tools. FN2 DATA.ZIP files can be read in directly using `gfsR` ([gfsR](https://github.com/HoldenJe/gfsR)) functions. Data can be retrieved from GLIS using functions in `glfishr` ([glfishr](https://github.com/AdamCottrill/glfishr)) Other packages (`readxls`, `RODBC`) can be utilized to retrieve data in other formats. The caveat is that functions within the package have been designed with *CREESYS* table formats and naming conventions in place. The end user is responsible for reshaping or renaming tables and variables to be consistent with this format. Example data is included in the package to illustrate each table format.  
+2. Data Cleaning. QA/QC is an important part of data management and the project life-cycle.  The reliability of the package calculations and summaries is predicated on the user providing clean data. Tools to assist in the data cleaning and validation process are available in `rprocval` ([rprocval}(https://github.com/HoldenJe/rprocval)]).  
+
+# Overview of creesys analysis steps
+1. Date issues
+2. Create FR713
+
+# Dates
+## Fix year in Date fields
+- creesys was not y2k compatible so users often set the project year to another year that had a matching calendar (i.e. 2020 calendar is the same as 1908)
+- need to convert all dates to the appropriate year
+- hint: i think `gfsR` has code that does this for all tables... something like *for all tables check column types and if class is date, replace year with new year*
+
+## Day types
+- weekdays that are holidays are often classified as weekend days because the effort observed on holidays is atypical for a weekday
+- these are/should be defined in the FN023 table
+
+# Data Structure  
+## Project definition tables  
+FN011, FN022, FN023, FN024, FN025, FN026 *(FN028, and FN029)* are all project set-up files. 
+
+## Project Data  
+The data table upon which calculations are base are: FN111, FN121, FN123 *(and FN125?)*. Additional data from the creel may be available in FN126 (diet) and FN127 (ages).
+
+## Computed Data  
+1. FR712 - strata length and summary (equiv to "STRATDAYS" in Creesys 4.x)  
+2. FR713 - daily summary 
+3. FR
+
+# FR713
+
 ## Generating the Results
 ```{r data-analysis}
 SC00_analysis <- generate_FR713_714_tables(SC00$FN011, SC00$FN022, SC00$FN023, SC00$FN024,
@@ -57,4 +100,3 @@ html_content <- tagList(
   )
 html_content
 ```
-
