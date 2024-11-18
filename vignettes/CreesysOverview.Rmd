@@ -10,12 +10,34 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  warning = FALSE, 
+  message = FALSE
 )
 ```
 
+## Importing Data with `gfsR`
+
+The `gfsR` package provides an import function that allows users to import data to their R environment directly from a FishNet2 DATA.ZIP file format. The `import_fn_creel` function returns the necessary design and data tables as dataframes within a list. The following example provides a brief overview of how to retrieve data from this format.
+
+```{r gfsR, eval=FALSE}
+library(gfsR)
+creel_zip <- "Documents/SC00_XXX/DATA.ZIP"
+creel_data <- import_fn_creel(creel_zip)
+```
+
+## Using Preloaded Example Data
+
 ```{r setup}
 library(creesysr)
+library(dplyr)
+library(hms)
+library(knitr)
+library(kableExtra)
+library(htmltools)
+data("SC00")
+names(SC00)
+SC00$FN011
 ```
 
 # Preamble
@@ -60,3 +82,21 @@ The data table upon which calculations are base are: FN111, FN121, FN123 *(and F
 3. FR
 
 # FR713
+
+## Generating the Results
+```{r data-analysis}
+SC00_analysis <- generate_FR713_714_tables(SC00$FN011, SC00$FN022, SC00$FN023, SC00$FN024,
+                                           SC00$FN025, SC00$FN026, SC00$FN028, SC00$FN111, 
+                                           SC00$FN112, SC00$FN121, SC00$FN123)
+```
+
+## Display as an FN2 Output
+```{r fn2display, render="as.is"}
+library(htmltools)
+library(kableExtra)
+html_content <- tagList(
+    HTML(SC00_analysis[[1]]),
+    HTML(SC00_analysis[[2]])
+  )
+html_content
+```
