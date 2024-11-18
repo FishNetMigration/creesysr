@@ -4,13 +4,23 @@
 \alias{make_FR712}
 \title{make_FR712}
 \usage{
-make_FR712(fn022 = FN022, fn023 = FN023, fn025 = FN025)
+make_FR712(fn022, fn023, fn024, fn025, fn026, fn028, fn111)
 }
 \arguments{
+\item{fn022}{FN022 design table}
+
+\item{fn023}{FN023 design table}
+
+\item{fn024}{FN024 design table}
+
 \item{fn025}{}
+
+\item{fn026}{FN026 design table}
+
+\item{fn028}{FN028 design table}
 }
 \value{
-FR712 table
+FR712-like table
 }
 \description{
 This function takes FN tables as inputs and generates the FR712 table.
