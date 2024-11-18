@@ -6,88 +6,66 @@
 #'
 #' @description
 #' This function takes FN tables as inputs and generates the FR712 table.
+
+#' @param fn022 FN022 design table
+#' @param fn023 FN023 design table
+#' @param fn024 FN024 design table
+#' @param fn026 FN026 design table
+#' @param fn028 FN028 design table
 #'
-#' @return FR712 table
+#' @return FR712-like table
 #' @export
 #'
-#' @examples
+#' \dontrun{
+#' FR712 <- make_FR712(SC00$FN022, SC00$FN023, SC00$FN024, SC00$FN025, SC00$FN026, SC00$FN028, SC00$FN111)
+#' }
 
-make_FR712 <- function(fn022 = FN022, fn023 = FN023, fn025 = FN025) {
 
-  #Restrict data to only required fields
-  fn022 <- fn022 %>% select(PRJ_CD, SSN, SSN_DATE0, SSN_DATE1)
-  fn023 <- fn023 %>% select(PRJ_CD, SSN, DTP, DOW_LST)
-  fn025 <- fn025 %>% select(PRJ_CD, DATE, DTP1)
+make_FR712 <- function(fn022, fn023, fn024, fn025, fn026, fn028, fn111) {
+  # summarize ssn length
+  SSN_LENGTH <- generate_SSN_LENGTH(fn022, fn023, fn024, fn025)
+  # create all strata
+  ALL_STRATA <- make_all_stratum(fn022, fn023, fn024, fn026, fn028)
+  # combine tables
+  FR712_raw<- left_join(ALL_STRATA_SC17, SSN_LENGTH_SC17) %>%
+    select(STRATUM, STRAT_DAYS, PRD_DUR, PRJ_CD)
 
-  #Validation to check for gaps in SSN strata
-  VAL <- fn022 %>%
-    mutate(SSN_DATE0 = as.Date(SSN_DATE0, format = "%Y-%m-%d"))%>%
-    mutate(SSN_DATE1 = as.Date(SSN_DATE1, format = "%Y-%m-%d"))%>%
-    arrange(SSN_DATE0)%>%
-    mutate(SSN_CHECK = ifelse((SSN_DATE1 + 1) != lead(SSN_DATE0), "ISSUE", "OK"))%>%
-    mutate(SSN_CHECK = ifelse(is.na(SSN_CHECK), "OK", SSN_CHECK))
+  # summarize fn111
+  fn111_sum <- fn111 %>% group_by(PRJ_CD, STRATUM) %>%
+    summarize(SAM_DAYS = n())
+  fn111_sum <- parse_STRAT(fn111_sum)
 
-  if(any(VAL$SSN_CHECK == "ISSUE")){stop("There is a gap between between the seasonal strata.")}
+  # combine fn111 and strata duration tables
+  FR712_raw <- left_join(FR712_raw, fn111_sum) %>%
+    mutate(SAM_DAYS = ifelse(is.na(SAM_DAYS),0, SAM_DAYS),
+           STRAT_HRS = STRAT_DAYS*PRD_DUR) %>%
+    select(-MODE)
 
-  #Merge the FN022 and FN023 tables
-  SSN_DAYS <- merge(fn022, fn023, all.x = TRUE, all.y = TRUE)
+  # summarize SSN_LENGTH
+  FR712_SSN <- SSN_LENGTH %>%
+    group_by(PRJ_CD, SSN, PRD_DUR) %>%
+    summarize(STRAT_DAYS = sum(STRAT_DAYS)) %>%
+    mutate(STRATUM = paste0(SSN, "_++_++_++"))
 
-  #Validation to check that FN023 contains all seasons in FN022
-  if(any(is.na(SSN_DAYS$DTP))){stop("There are missing SSN values in the FN023 table.")}
+  # summarize SAM_DAYS by SSN
+  FR712_SAM <- fn111_sum %>% group_by(SSN, PRJ_CD) %>%
+    summarize(SAM_DAYS = sum(SAM_DAYS))
 
-  #Merge the new table with the FN025 table
-  EXCEPTDAYS <- merge(SSN_DAYS, fn025, all.x = TRUE)
+  FR712_SSN<- inner_join(FR712_SSN, FR712_SAM, by = c("PRJ_CD", "SSN"))
 
-  #No validation was added to check that FN025 contains all seasons in FN022
-  #Assumed that we can exclude any FN025 outside seasonal ranges
+  # summarize N strata combined in SSN
+  STRAT_NN <- ALL_STRATA_SC17 %>% group_by(SSN) %>%
+    summarize(STRAT_NN = n())
 
-  #Identify which DTP values need adjustment
-  #This information is stored in the m025 field
-  EXCEPTDAYS <- EXCEPTDAYS %>%
-    mutate(SSN_DATE0 = as.Date(SSN_DATE0, format = "%Y-%m-%d"))%>%
-    mutate(SSN_DATE1 = as.Date(SSN_DATE1, format = "%Y-%m-%d"))%>%
-    mutate(DATE = as.Date(DATE, format = "%Y-%m-%d"))%>%
-    mutate(m025 = ifelse(DATE >= SSN_DATE0 & DATE <= SSN_DATE1, ifelse(DTP1 == DTP, 1, -1), 0))%>%
-    mutate(m025 = ifelse(is.na(DATE), 0, m025))%>%
-    mutate(DTP1 = ifelse(is.na(DTP1), 2, DTP1))%>%
-    group_by(PRJ_CD, SSN, SSN_DATE0, SSN_DATE1, DTP, DTP1, DOW_LST)%>%
-    summarise(m025 = sum(m025), .groups = "drop")%>%
-    select(PRJ_CD, SSN, SSN_DATE0, SSN_DATE1, DTP, DTP1, DOW_LST, m025)
+  FR712_SSN <- left_join(FR712_SSN, STRAT_NN, by = c("SSN"))
 
-  #Calculate the number of STRAT_DAYS
-  STRATDAYS <- EXCEPTDAYS %>%
-    mutate(Days = as.numeric((SSN_DATE1-SSN_DATE0)+1))%>%
-    mutate(FWeeks = round(Days/7,0))%>%
-    mutate(ExDays = Days-FWeeks*7)%>%
-    mutate(FWeek1 = SSN_DATE1-ExDays)%>%
-    mutate(DOW0 = as.numeric(format(FWeek1,'%w'))+1)%>%
-    mutate(Su = ifelse(grepl("1", DOW_LST, fixed=TRUE),
-                       FWeeks+ifelse((DOW0+ExDays)>7,1,0),0))%>%
-    mutate(Mo = ifelse(grepl("2", DOW_LST, fixed=TRUE),
-                       FWeeks+ifelse(DOW0<2 & (DOW0+ExDays)>=2 | DOW0>2 & (DOW0+ExDays)>=9,1,0),0))%>%
-    mutate(Tu = ifelse(grepl("3", DOW_LST, fixed=TRUE),
-                       FWeeks+ifelse(DOW0<3 & (DOW0+ExDays)>=3 | DOW0>3 & (DOW0+ExDays)>=10,1,0),0))%>%
-    mutate(We = ifelse(grepl("4", DOW_LST, fixed=TRUE),
-                       FWeeks+ifelse(DOW0<4 & (DOW0+ExDays)>=4 | DOW0>4 & (DOW0+ExDays)>=11,1,0),0))%>%
-    mutate(Th = ifelse(grepl("5", DOW_LST, fixed=TRUE),
-                       FWeeks+ifelse(DOW0<5 & (DOW0+ExDays)>=5 | DOW0>5 & (DOW0+ExDays)>=12,1,0),0))%>%
-    mutate(Fr = ifelse(grepl("6", DOW_LST, fixed=TRUE),
-                       FWeeks+ifelse(DOW0<6 & (DOW0+ExDays)>=6 | DOW0>6 & (DOW0+ExDays)>=13,1,0),0))%>%
-    mutate(Sa = ifelse(grepl("7", DOW_LST, fixed=TRUE),
-                       FWeeks+ifelse(DOW0<7 & (DOW0+ExDays)>=7,1,0),0))%>%
-    mutate(nDAYS = Su+Mo+Tu+We+Th+Fr+Sa) %>%
-    mutate(STRAT_DAYS = nDAYS+m025)
+  # append STRATUM raw and SSN Summary as per FR712 format
+  FR712 <- bind_rows(FR712_raw, FR712_SSN) %>%
+    rename(STRAT = STRATUM) %>%
+    ungroup() %>%
+    select(STRAT, STRAT_DAYS, SAM_DAYS, STRAT_HRS, PRD_DUR, STRAT_NN) %>%
+    mutate(STRAT_NN = ifelse(is.na(STRAT_NN), 1, STRAT_NN))
 
-  #Standardize the field order for STRATDAYS
-  STRATDAYS <- STRATDAYS %>%
-    arrange(SSN, DTP)%>%
-    rename(sFN025 = m025)%>%
-    select(PRJ_CD, SSN, DTP, DOW_LST, SSN_DATE0, FWeek1, SSN_DATE1,
-           DOW0, Days, FWeeks, ExDays, Su, Mo, Tu, We, Th, Fr, Sa,
-           nDAYS, sFN025, STRAT_DAYS)
+  return(FR712)
 
-  #Return the datasets
-  assign("EXCEPTDAYS", EXCEPTDAYS, envir = .GlobalEnv)
-  assign("STRATDAYS", STRATDAYS, envir = .GlobalEnv)
-  print("The datasets EXCEPTDAYS and STRATDAYS have been created successfully.")
 }

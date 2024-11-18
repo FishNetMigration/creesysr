@@ -16,22 +16,22 @@
 
 parse_STRAT <- function(fndf) {
   # fndf can be any FN2 table as long as it has STRAT
-  if(!("STRAT" %in% names(fndf))) {stop("STRAT is not a column in this dataframe")}
+  if(!("STRATUM" %in% names(fndf))) {stop("STRATUM is not a column in this dataframe")}
 
   # Season
-  fndf$SSN <- as.factor(substr(fndf$STRAT, 1, 2))
+  fndf$SSN <- as.factor(substr(fndf$STRATUM, 1, 2))
 
   # Day type
-  fndf$DTP <- as.factor(substr(fndf$STRAT, 4, 4))
+  fndf$DTP <- as.factor(substr(fndf$STRATUM, 4, 4))
 
   # Period
-  fndf$PRD <- as.factor(substr(fndf$STRAT, 5,5))
+  fndf$PRD <- as.factor(substr(fndf$STRATUM, 5,5))
 
   # Space
-  fndf$SPACE <- as.factor(substr(fndf$STRAT, 7, 8))
+  fndf$SPACE <- as.factor(substr(fndf$STRATUM, 7, 8))
 
   # Mode
-  fndf$MODE <- as.factor(substr(fndf$STRAT, 10, 11))
+  fndf$MODE <- as.factor(substr(fndf$STRATUM, 10, 11))
 
   # Return new appended df
   fndf
