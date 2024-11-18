@@ -1,7 +1,7 @@
 Package: creesysr
 Type: Package
 Title: An R implementation of MNR's CREESYS
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 License: MIT + file LICENSE
@@ -14,10 +14,15 @@ Authors@R: c(
     person("Sarah", "Beech", , "sarah.beech1@ontario.ca", role = "aut"),
     person("Arthur", "Bonsall", , "arthur.bonsall@ontario.ca", role = "aut")
   )
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Suggests: 
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
+Depends: 
+    R (>= 2.10)
+Imports: 
+    magrittr
+
