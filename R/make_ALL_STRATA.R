@@ -24,8 +24,10 @@ make_all_stratum <- function(fn022, fn023, fn024, fn026, fn028){
 
   STRATUM <- expand.grid(SSN = SSN, DTP = DTP, PRD = PRD, SPACE = SPACE, MODE = MODE)
   STRATUM <- STRATUM %>%
-    mutate(STRATUM = paste0(SSN, "_", DTP, PRD, "_", SPACE, "_", MODE))
-  STRATUM <- STRATUM %>% group_by(STRATUM, SSN, DTP, PRD, SPACE, MODE) %>% summarize
+    dplyr::mutate(STRATUM = paste0(SSN, "_", DTP, PRD, "_", SPACE, "_", MODE))
+  STRATUM <- STRATUM %>%
+    dplyr::group_by(STRATUM, SSN, DTP, PRD, SPACE, MODE) %>%
+    dplyr::summarize()
   STRATUM
 }
 
