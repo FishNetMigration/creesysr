@@ -18,20 +18,15 @@
 #' }
 generate_SSN_LENGTH <- function(fn022, fn023, fn024, fn025){
 
-  fn022 <- fn022 %>% select(-V0, -ENTRY)
-  fn023 <- fn023 %>% select(-V0, -ENTRY)
-  fn024 <- fn024 %>% select(-V0, -ENTRY)
-  fn025 <- fn025 %>% select(-V0, -ENTRY)
-
   SSN_DTP <- fn022 %>%
-    left_join(., fn023, by=c("SSN", "PRJ_CD"))
+    dplyr::left_join(., fn023, by=c("SSN", "PRJ_CD"))
 
   SSN_DTP_list <- split(SSN_DTP, list(SSN_DTP$SSN, SSN_DTP$DTP))
 
   make_calendar <- function(ssn_dtp) {
     all_dates <- seq.Date(ssn_dtp$SSN_DATE0, ssn_dtp$SSN_DATE1, by = "day")
     day_type <- as.numeric(unlist(strsplit(ssn_dtp$DOW_LST, "")))
-    ssn_days <- all_dates[wday(all_dates) %in% day_type]
+    ssn_days <- all_dates[lubridate::wday(all_dates) %in% day_type]
     if(length(ssn_days) == 0) {
       invisible(NULL)
     } else {
@@ -40,18 +35,18 @@ generate_SSN_LENGTH <- function(fn022, fn023, fn024, fn025){
     }
   }
 
-  full_calendar <- bind_rows(lapply(SSN_DTP_list, make_calendar))
+  full_calendar <- dplyr::bind_rows(lapply(SSN_DTP_list, make_calendar))
 
   # precursor to FR712
-  SSN_LENGTH <- left_join(full_calendar, fn025, by = c("PRJ_CD", "DATE")) %>%
-    mutate(DTP = if_else(!is.na(DTP1), DTP1, DTP)) %>%
-    select(SSN, DTP, DATE) %>%
-    group_by(SSN, DTP) %>%
-    summarize(STRAT_DAYS = n()) %>%
-    left_join(fn023, ., by=c("SSN", "DTP")) %>%
-    mutate(STRAT_DAYS = ifelse(is.na(STRAT_DAYS), 0, STRAT_DAYS)) %>%
-    left_join(., fn024, by = c('SSN', "DTP", "PRJ_CD")) %>%
-    select(-F4, -F3)
+  SSN_LENGTH <- dplyr::left_join(full_calendar, fn025, by = c("PRJ_CD", "DATE")) %>%
+    dplyr::mutate(DTP = ifelse(!is.na(DTP1), DTP1, DTP)) %>%
+    dplyr::select(SSN, DTP, DATE) %>%
+    dplyr::group_by(SSN, DTP) %>%
+    dplyr::summarize(STRAT_DAYS = dplyr::n()) %>%
+    dplyr::left_join(fn023, ., by=c("SSN", "DTP")) %>%
+    dplyr::mutate(STRAT_DAYS = ifelse(is.na(STRAT_DAYS), 0, STRAT_DAYS)) %>%
+    dplyr::left_join(., fn024, by = c('SSN', "DTP", "PRJ_CD")) %>%
+    dplyr::select(-F4, -F3)
 
   return(SSN_LENGTH)
 }
