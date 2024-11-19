@@ -41,6 +41,9 @@ generate_FR713_714_tables(
 
 \item{fn123}{FN species records part of the CIF form but nested by SAM to the FN121}
 }
+\value{
+FN2-like output of creel results
+}
 \description{
 This function generates the estimates and outputs a table for EFFORT and HARVEST
 }

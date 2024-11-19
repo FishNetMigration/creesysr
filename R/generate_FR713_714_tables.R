@@ -16,7 +16,7 @@
 #' This function generates the estimates and outputs a table for EFFORT and HARVEST
 #'
 #'
-#' @return
+#' @return FN2-like output of creel results
 #' @export
 #'
 #' @examples

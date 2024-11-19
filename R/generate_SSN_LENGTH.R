@@ -13,6 +13,9 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
+#' generate_SSN_LENGTH(SC00$FN022, SC00$FN023, SC00$FN024, SC00$FN025)
+#' }
 generate_SSN_LENGTH <- function(fn022, fn023, fn024, fn025){
 
   fn022 <- fn022 %>% select(-V0, -ENTRY)

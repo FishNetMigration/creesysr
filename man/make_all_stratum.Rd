@@ -23,3 +23,10 @@ dataframe with all possible strata
 \description{
 Make All Stratum
 }
+\examples{
+\dontrun{
+make_all_stratum(SC00$FN022, SC00$FN023, SC00$FN024, SC00$FN026, SC00$FN028)
+}
+
+
+}

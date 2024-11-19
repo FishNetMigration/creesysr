@@ -22,3 +22,8 @@ summary table of SSN length
 This function generates the season length give the FN2 design tables
 correcting for exception days from FN025
 }
+\examples{
+\dontrun{
+generate_SSN_LENGTH(SC00$FN022, SC00$FN023, SC00$FN024, SC00$FN025)
+}
+}

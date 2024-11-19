@@ -13,8 +13,6 @@ make_FR712(fn022, fn023, fn024, fn025, fn026, fn028, fn111)
 
 \item{fn024}{FN024 design table}
 
-\item{fn025}{}
-
 \item{fn026}{FN026 design table}
 
 \item{fn028}{FN028 design table}
@@ -24,4 +22,9 @@ FR712-like table
 }
 \description{
 This function takes FN tables as inputs and generates the FR712 table.
+}
+\examples{
+\dontrun{
+FR712 <- make_FR712(SC00$FN022, SC00$FN023, SC00$FN024, SC00$FN025, SC00$FN026, SC00$FN028, SC00$FN111)
+}
 }

@@ -1,12 +1,8 @@
 #' make_FR712
 #'
-#' @param fn022
-#' @param fn023
-#' @param fn025
-#'
 #' @description
 #' This function takes FN tables as inputs and generates the FR712 table.
-
+#'
 #' @param fn022 FN022 design table
 #' @param fn023 FN023 design table
 #' @param fn024 FN024 design table
@@ -16,6 +12,7 @@
 #' @return FR712-like table
 #' @export
 #'
+#' @examples
 #' \dontrun{
 #' FR712 <- make_FR712(SC00$FN022, SC00$FN023, SC00$FN024, SC00$FN025, SC00$FN026, SC00$FN028, SC00$FN111)
 #' }
