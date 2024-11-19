@@ -24,45 +24,50 @@ make_FR712 <- function(fn022, fn023, fn024, fn025, fn026, fn028, fn111) {
   # create all strata
   ALL_STRATA <- make_all_stratum(fn022, fn023, fn024, fn026, fn028)
   # combine tables
-  FR712_raw<- left_join(ALL_STRATA_SC17, SSN_LENGTH_SC17) %>%
-    select(STRATUM, STRAT_DAYS, PRD_DUR, PRJ_CD)
+  FR712_raw<- dplyr::left_join(ALL_STRATA, SSN_LENGTH,
+                               by=c("SSN", "DTP", "PRD")) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(STRATUM, STRAT_DAYS, PRD_DUR, PRJ_CD)
 
   # summarize fn111
-  fn111_sum <- fn111 %>% group_by(PRJ_CD, STRATUM) %>%
-    summarize(SAM_DAYS = n())
+  fn111_sum <- fn111 %>%
+    dplyr::group_by(PRJ_CD, STRATUM) %>%
+    dplyr::summarize(SAM_DAYS = dplyr::n())
   fn111_sum <- parse_STRAT(fn111_sum)
 
   # combine fn111 and strata duration tables
-  FR712_raw <- left_join(FR712_raw, fn111_sum) %>%
-    mutate(SAM_DAYS = ifelse(is.na(SAM_DAYS),0, SAM_DAYS),
-           STRAT_HRS = STRAT_DAYS*PRD_DUR) %>%
-    select(-MODE)
+  FR712_raw <- dplyr::left_join(FR712_raw, fn111_sum, by = c("STRATUM", "PRJ_CD")) %>%
+    dplyr::mutate(SAM_DAYS = ifelse(is.na(SAM_DAYS),0, SAM_DAYS)) %>%
+    dplyr::select(-MODE)
 
   # summarize SSN_LENGTH
   FR712_SSN <- SSN_LENGTH %>%
-    group_by(PRJ_CD, SSN, PRD_DUR) %>%
-    summarize(STRAT_DAYS = sum(STRAT_DAYS)) %>%
-    mutate(STRATUM = paste0(SSN, "_++_++_++"))
+    dplyr::group_by(PRJ_CD, SSN, PRD_DUR) %>%
+    dplyr::summarize(STRAT_DAYS = sum(STRAT_DAYS)) %>%
+    dplyr::mutate(STRATUM = paste0(SSN, "_++_++_++"))
 
   # summarize SAM_DAYS by SSN
-  FR712_SAM <- fn111_sum %>% group_by(SSN, PRJ_CD) %>%
-    summarize(SAM_DAYS = sum(SAM_DAYS))
+  FR712_SAM <- fn111_sum %>%
+    dplyr::group_by(SSN, PRJ_CD) %>%
+    dplyr::summarize(SAM_DAYS = sum(SAM_DAYS))
 
-  FR712_SSN<- inner_join(FR712_SSN, FR712_SAM, by = c("PRJ_CD", "SSN"))
+  FR712_SSN<- dplyr::inner_join(FR712_SSN, FR712_SAM, by = c("PRJ_CD", "SSN"))
 
   # summarize N strata combined in SSN
-  STRAT_NN <- ALL_STRATA_SC17 %>% group_by(SSN) %>%
-    summarize(STRAT_NN = n())
+  STRAT_NN <- ALL_STRATA %>%
+    dplyr::group_by(SSN) %>%
+    dplyr::summarize(STRAT_NN = dplyr::n())
 
-  FR712_SSN <- left_join(FR712_SSN, STRAT_NN, by = c("SSN"))
+  FR712_SSN <- dplyr::left_join(FR712_SSN, STRAT_NN, by = c("SSN"))
 
   # append STRATUM raw and SSN Summary as per FR712 format
-  FR712 <- bind_rows(FR712_raw, FR712_SSN) %>%
-    rename(STRAT = STRATUM) %>%
-    ungroup() %>%
-    select(STRAT, STRAT_DAYS, SAM_DAYS, STRAT_HRS, PRD_DUR, STRAT_NN) %>%
-    mutate(STRAT_NN = ifelse(is.na(STRAT_NN), 1, STRAT_NN))
+  FR712 <- dplyr::bind_rows(FR712_raw, FR712_SSN) %>%
+    dplyr::rename(STRAT = STRATUM) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(STRAT, STRAT_DAYS, SAM_DAYS, PRD_DUR, STRAT_NN) %>%
+    dplyr::mutate(STRAT_NN = ifelse(is.na(STRAT_NN), 1, STRAT_NN)) %>%
+    dplyr::mutate(STRAT_HRS = STRAT_DAYS*PRD_DUR) %>%
+    as.data.frame()
 
   return(FR712)
-
 }
