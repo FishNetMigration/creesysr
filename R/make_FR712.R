@@ -6,12 +6,14 @@
 #' @param fn022 FN022 design table
 #' @param fn023 FN023 design table
 #' @param fn024 FN024 design table
+#' @param fn025 FN025 design table
 #' @param fn026 FN026 design table
 #' @param fn028 FN028 design table
+#' @param fn111 FN111 creel table
 #'
 #' @return FR712-like table
 #' @export
-#'
+#' @seealso [make_FR712_SSN()]
 #' @examples
 #' \dontrun{
 #' FR712 <- make_FR712(SC00$FN022, SC00$FN023, SC00$FN024, SC00$FN025, SC00$FN026, SC00$FN028, SC00$FN111)
@@ -40,6 +42,45 @@ make_FR712 <- function(fn022, fn023, fn024, fn025, fn026, fn028, fn111) {
     dplyr::mutate(SAM_DAYS = ifelse(is.na(SAM_DAYS),0, SAM_DAYS)) %>%
     dplyr::select(-MODE)
 
+  FR712_raw <- FR712_raw %>%
+    dplyr::rename(STRAT = STRATUM) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(STRAT, STRAT_DAYS, SAM_DAYS, PRD_DUR) %>%
+    dplyr::mutate(STRAT_NN = 1) %>%
+    dplyr::mutate(STRAT_HRS = STRAT_DAYS*PRD_DUR) %>%
+    as.data.frame()
+
+  return(FR712_raw)
+
+}
+
+#' make_FR712_SSN
+#'
+#' @description
+#' This function takes FN tables as inputs and generates the FR712 table summarized to SSN (STRAT = 01_++_++_++)
+#'
+#' @param fn022 FN022 design table
+#' @param fn023 FN023 design table
+#' @param fn024 FN024 design table
+#' @param fn025 FN025 design table
+#' @param fn026 FN026 design table
+#' @param fn028 FN028 design table
+#' @param fn111 FN111 creel table
+#'
+#' @return FR712-like table summarized to SSN
+#' @seealso [make_FR712_SSN()]
+#' @examples
+#' \dontrun{
+#' FR712_SSN <- make_FR712_SSN(SC00$FN022, SC00$FN023, SC00$FN024, SC00$FN025, SC00$FN026, SC00$FN028, SC00$FN111)
+#' FR712_ALL <-  make_FR712(SC00$FN022, SC00$FN023, SC00$FN024, SC00$FN025, SC00$FN026, SC00$FN028, SC00$FN111)
+#' FR712 <- dplyr::bind_rows(FR712_ALL, FR712_SSN)
+#' }
+
+make_FR712_SSN <- function(fn022, fn023, fn024, fn025, fn026, fn028, fn111) {
+  FR712_raw <- creesysr::make_FR712(fn022, fn023, fn024, fn025, fn026, fn028, fn111)
+  SSN_LENGTH <- creesysr::generate_SSN_LENGTH(fn022, fn023, fn024, fn025)
+  ALL_STRATA <- creesysr::make_all_stratum(fn022, fn023, fn024, fn026, fn028)
+
   # summarize SSN_LENGTH
   FR712_SSN <- SSN_LENGTH %>%
     dplyr::group_by(PRJ_CD, SSN, PRD_DUR) %>%
@@ -61,7 +102,7 @@ make_FR712 <- function(fn022, fn023, fn024, fn025, fn026, fn028, fn111) {
   FR712_SSN <- dplyr::left_join(FR712_SSN, STRAT_NN, by = c("SSN"))
 
   # append STRATUM raw and SSN Summary as per FR712 format
-  FR712 <- dplyr::bind_rows(FR712_raw, FR712_SSN) %>%
+  FR712_SSN <- FR712_SSN %>%
     dplyr::rename(STRAT = STRATUM) %>%
     dplyr::ungroup() %>%
     dplyr::select(STRAT, STRAT_DAYS, SAM_DAYS, PRD_DUR, STRAT_NN) %>%
@@ -69,5 +110,5 @@ make_FR712 <- function(fn022, fn023, fn024, fn025, fn026, fn028, fn111) {
     dplyr::mutate(STRAT_HRS = STRAT_DAYS*PRD_DUR) %>%
     as.data.frame()
 
-  return(FR712)
+  return(FR712_SSN)
 }
