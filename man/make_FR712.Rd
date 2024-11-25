@@ -13,9 +13,13 @@ make_FR712(fn022, fn023, fn024, fn025, fn026, fn028, fn111)
 
 \item{fn024}{FN024 design table}
 
+\item{fn025}{FN025 design table}
+
 \item{fn026}{FN026 design table}
 
 \item{fn028}{FN028 design table}
+
+\item{fn111}{FN111 creel table}
 }
 \value{
 FR712-like table
@@ -27,4 +31,7 @@ This function takes FN tables as inputs and generates the FR712 table.
 \dontrun{
 FR712 <- make_FR712(SC00$FN022, SC00$FN023, SC00$FN024, SC00$FN025, SC00$FN026, SC00$FN028, SC00$FN111)
 }
+}
+\seealso{
+[make_FR712_SSN()]
 }
